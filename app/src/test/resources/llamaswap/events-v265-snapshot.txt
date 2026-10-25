@@ -1,0 +1,12 @@
+event:message
+data:{"type":"modelStatus","data":"[{\"id\":\"qwen-7b-q4\",\"name\":\"Qwen 7B Q4\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"gemma-9b-q4\",\"name\":\"Gemma 9B Q4\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"llama-8b-q5\",\"name\":\"Llama 8B Q5\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-d\",\"name\":\"Model D\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-e\",\"name\":\"Model E\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-f\",\"name\":\"Model F\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-g\",\"name\":\"Model G\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-h\",\"name\":\"Model H\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-i\",\"name\":\"Model I\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-j\",\"name\":\"Model J\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"model-k\",\"name\":\"Model K\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"},{\"id\":\"coder-l\",\"name\":\"Coder L\",\"description\":\"\",\"state\":\"stopped\",\"unlisted\":false,\"peerID\":\"\"}]"}
+
+event:message
+data:{"type":"uiConfig","data":"{\"activity\":{\"session_id\":[\"X-Session-ID\",\"X-Litellm-Session-Id\"]}}"}
+
+event:message
+data:{"type":"profileChanged","data":"{\"active\":null}"}
+
+event:message
+data:{"type":"inflight","data":"{\"operation\":\"snapshot\"}"}
+

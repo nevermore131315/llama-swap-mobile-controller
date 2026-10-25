@@ -1,0 +1,96 @@
+package io.github.nevermore131315.llamaswapcontroller.theme
+
+import androidx.compose.ui.graphics.Color
+
+// Shared color tokens — only what code OUTSIDE the theme presets consumes.
+// The preset palettes themselves are self-contained template fills in
+// presets/ (see PaletteTemplate.kt); they don't import from here.
+
+// Semantic status colors (always brand-defined).
+val StatusGreen = Color(0xFF3DDC84)
+val StatusGreenContainer = Color(0xFF143A23)
+val StatusRed = Color(0xFFFF5C5C)
+val StatusRedContainer = Color(0xFF3D1414)
+val StatusYellow = Color(0xFFFFB627)
+val StatusYellowContainer = Color(0xFF3D2F0F)
+val StatusBlue = Color(0xFF4DA8FF)
+val StatusBlueContainer = Color(0xFF0F2A3D)
+val StatusGrey = Color(0xFF9E9E9E)
+val StatusGreyDark = Color(0xFF1A1A24)
+val StatusGreyLight = Color(0xFFF5F5F5)
+
+// Chat-specific fallback tokens (default theme surface text colors).
+val DarkOnSurface = Color(0xFFE8E6EE)
+val LightOnSurface = Color(0xFF1A1A24)
+
+// Syntax highlighting tokens (code blocks) — VS Code Dark+ palette — good
+// general readability across all presets. Consumed by CodeBlockCard.
+val CodeKeyword = Color(0xFF569CD6) // blue — for val, fun, class, etc.
+val CodeString = Color(0xFFCE9178) // orange — for "string literals"
+val CodeComment = Color(0xFF6A9955) // green — for // comments
+val CodeNumber = Color(0xFFB5CEA8) // light green — for 42, 0xFF
+val CodePunctuation = Color(0xFFD4D4D4) // gray — for {, (, ;, etc.
+
+// Code block / terminal surface colors (issue #659).
+val CodeTerminalBg = Color(0xFF1E1E1E)
+val CodeTerminalBorder = Color(0xFF333333)
+val CodeTerminalText = Color(0xFFD4D4D4)
+val CodeTerminalMuted = Color(0xFF808080)
+
+// Diff viewer tokens (issue #738).
+val CodeDiffAddBg = Color(0x263DDC84)
+val CodeDiffAddText = Color(0xFF3DDC84)
+val CodeDiffDeleteBg = Color(0x26FF5C5C)
+val CodeDiffDeleteText = Color(0xFFFF5C5C)
+val CodeDiffHunkBg = Color(0x264DA8FF)
+val CodeDiffHunkText = Color(0xFF4DA8FF)
+
+// Custom vector icons — default fill for hand-declared ImageVector icons
+// (e.g. NeurologyIcon). Mirrors Material's own icon set: vectors are drawn
+// opaque black and Icon()'s tint (LocalContentColor) replaces the RGB at
+// draw time — only the alpha channel survives, so this must stay opaque.
+val IconDefaultFill = Color.Black
+
+/**
+ * Safely parse a hex color string (#RGB, #RRGGBB, or #AARRGGBB), returning [fallback] if invalid.
+ */
+fun parseHexColor(
+    hex: String?,
+    fallback: Color,
+): Color {
+    if (hex.isNullOrBlank()) return fallback
+    val clean = hex.removePrefix("#").trim()
+    return try {
+        val parsed = clean.toLong(16)
+        when (clean.length) {
+            6 -> Color((0xFF000000 or parsed).toInt())
+            8 -> Color(parsed.toInt())
+            else -> fallback
+        }
+    } catch (_: Exception) {
+        fallback
+    }
+}
+
+private val HSL_COLOR =
+    Regex("""^hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%\s*(?:[,/]\s*[\d.]+%?\s*)?\)$""")
+
+/**
+ * Parse a project color chosen in the desktop app: CSS `hsl(210 68% 58%)` (space or comma
+ * separated) or hex. Returns null for anything else so callers can simply omit the accent.
+ */
+fun parseProjectColor(raw: String?): Color? {
+    val value = raw?.trim().orEmpty()
+    if (value.isEmpty()) return null
+    if (value.startsWith("#")) return parseHexColor(value, Color.Unspecified).takeIf { it != Color.Unspecified }
+    val match = HSL_COLOR.matchEntire(value.lowercase()) ?: return null
+    val (hue, saturation, lightness) = match.destructured
+    val h = hue.toFloatOrNull() ?: return null
+    val s = saturation.toFloatOrNull()?.div(100f) ?: return null
+    val l = lightness.toFloatOrNull()?.div(100f) ?: return null
+    if (h !in 0f..360f || s !in 0f..1f || l !in 0f..1f) return null
+    return Color.hsl(h % 360f, s, l)
+}
+
+/** Pure white glyph for filled accent controls (composer action button) when it is legible on the preset primary. */
+val GlyphWhite = Color(0xFFFFFFFF)

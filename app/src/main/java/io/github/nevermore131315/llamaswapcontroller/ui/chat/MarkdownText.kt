@@ -1,0 +1,576 @@
+package io.github.nevermore131315.llamaswapcontroller.ui.chat
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.hrm.latex.renderer.LatexAutoWrap
+import com.hrm.latex.renderer.measure.LatexMeasurerState
+import com.hrm.latex.renderer.measure.rememberLatexMeasurer
+import com.hrm.latex.renderer.model.LatexConfig
+import com.hrm.latex.renderer.model.LatexTheme
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.SearchHighlightColors
+import io.github.nevermore131315.llamaswapcontroller.theme.searchHighlightColors
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.BulletRun
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.FnNote
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.InlineMathSegment
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.MarkdownInlineStyler
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.MarkdownInlineText
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.MarkdownMediaResolver
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.MarkdownTable
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.MdBlock
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.TableAlign
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.buildBulletRunText
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.coalesceBulletRuns
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.parseBlocks
+import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.splitInlineMath
+import io.github.nevermore131315.llamaswapcontroller.util.BidiUtils
+
+private val URL_PATTERN = Regex("""https?://[^\s)>\[\]"'‘’]+""")
+
+private fun bidiTextDirection(isRtl: Boolean): TextDirection = if (isRtl) TextDirection.Rtl else TextDirection.Ltr
+
+/**
+ * Renders chat assistant text as Markdown, including while it streams. The
+ * upstream token buffer coalesces deltas; parsing is memoized for identical text
+ * so completion does not swap a plain-text row for a differently sized block tree.
+ *
+ * Supports: fenced ```code``` blocks (horizontal scroll + copy), inline `code`, **bold**, *italic*,
+ * ***bold italic***, ~~strike~~, ==highlight==, ^sup^ / ~sub~, <kbd>keys</kbd>, headings,
+ * bullet/ordered/task lists, > blockquotes, definition lists, tables, --- rules, footnotes, and
+ * [links](url) / bare URLs, and inline/display LaTeX math using `$…$` / `$$…$$`.
+ */
+@Composable
+fun MarkdownText(
+    text: String,
+    textColor: Color,
+    isStreaming: Boolean = false,
+    searchQuery: String = "",
+    isCurrentMatch: Boolean = false,
+    modifier: Modifier = Modifier,
+    onImageClick: (ImageViewerModel) -> Unit = {},
+) {
+    val statusColors = LocalHermesStatusColors.current
+    val highlights = searchHighlightColors(statusColors)
+    val linkColor = MaterialTheme.colorScheme.primary
+    val blocks = remember(text, isStreaming) { coalesceBulletRuns(parseBlocks(text)) }
+    val latexMeasurer = rememberLatexMeasurer()
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        for (block in blocks) {
+            when (block) {
+                is MdBlock.Code -> {
+                    io.github.nevermore131315.llamaswapcontroller.ui.chat.components.CodeBlockCard(
+                        code = block.code,
+                        language = block.language,
+                        onCopy = { /* clipboard handled internally */ },
+                        searchQuery = searchQuery,
+                        isCurrentMatch = isCurrentMatch,
+                    )
+                }
+
+                is MdBlock.Math -> {
+                    LatexAutoWrap(
+                        latex = block.latex,
+                        config =
+                            LatexConfig(
+                                fontSize = 18.sp,
+                                theme = LatexTheme.light(color = textColor, backgroundColor = Color.Transparent),
+                                accessibilityEnabled = true,
+                            ),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                    )
+                }
+
+                is MdBlock.Hr -> {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = textColor.copy(alpha = 0.25f),
+                    )
+                }
+
+                is MdBlock.Heading -> {
+                    val headingStyle =
+                        when (block.level) {
+                            1 -> MaterialTheme.typography.headlineMedium
+                            2 -> MaterialTheme.typography.headlineSmall
+                            3 -> MaterialTheme.typography.titleMedium
+                            4 -> MaterialTheme.typography.titleSmall
+                            5 -> MaterialTheme.typography.labelLarge
+                            else -> MaterialTheme.typography.labelMedium
+                        }
+                    val isRtl = remember(block.text) { BidiUtils.isRtlText(block.text) }
+                    val blockDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                    CompositionLocalProvider(LocalLayoutDirection provides blockDirection) {
+                        MarkdownInlineText(
+                            text = block.text,
+                            isRtlOverride = isRtl,
+                            textColor = textColor,
+                            latexMeasurer = latexMeasurer,
+                            style =
+                                headingStyle.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    textDirection = bidiTextDirection(isRtl),
+                                ),
+                            searchQuery = searchQuery,
+                            isCurrentMatch = isCurrentMatch,
+                            linkColor = linkColor,
+                            highlights = highlights,
+                            modifier = Modifier.padding(vertical = 2.dp),
+                        )
+                    }
+                }
+
+                is BulletRun -> {
+                    val density = LocalDensity.current
+                    val bodyStyle = MaterialTheme.typography.bodyMedium.copy(textDirection = TextDirection.Ltr)
+                    val textMeasurer = rememberTextMeasurer()
+                    val runText =
+                        remember(
+                            block,
+                            density,
+                            bodyStyle,
+                            textColor,
+                            searchQuery,
+                            isCurrentMatch,
+                            linkColor,
+                            highlights,
+                        ) {
+                            buildBulletRunText(
+                                run = block,
+                                density = density,
+                                textColor = textColor,
+                                searchQuery = searchQuery,
+                                isCurrentMatch = isCurrentMatch,
+                                linkColor = linkColor,
+                                highlights = highlights,
+                                prefixWidth = { prefix ->
+                                    with(density) {
+                                        textMeasurer
+                                            .measure(prefix, bodyStyle)
+                                            .size.width
+                                            .toSp()
+                                    }
+                                },
+                            )
+                        }
+                    Text(
+                        text = runText,
+                        color = textColor,
+                        style = bodyStyle,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp),
+                    )
+                }
+
+                is MdBlock.Bullet -> {
+                    val indent = (block.level * 16).dp
+                    val isRtl = remember(block.text) { BidiUtils.isRtlText(block.text) }
+                    val blockDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                    CompositionLocalProvider(LocalLayoutDirection provides blockDirection) {
+                        Row(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = indent)
+                                    .padding(vertical = 1.dp),
+                            verticalAlignment = Alignment.Top,
+                        ) {
+                            val bulletChar =
+                                when (block.level % 3) {
+                                    0 -> "•"
+                                    1 -> "◦"
+                                    else -> "▪"
+                                }
+                            Text(
+                                text = bulletChar,
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(end = 6.dp),
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                MarkdownInlineText(
+                                    text = block.text,
+                                    isRtlOverride = isRtl,
+                                    textColor = textColor,
+                                    latexMeasurer = latexMeasurer,
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            textDirection = bidiTextDirection(isRtl),
+                                        ),
+                                    searchQuery = searchQuery,
+                                    isCurrentMatch = isCurrentMatch,
+                                    linkColor = linkColor,
+                                    highlights = highlights,
+                                )
+                                if (block.nestedSource.isNotEmpty()) {
+                                    MarkdownText(
+                                        text = block.nestedSource,
+                                        textColor = textColor,
+                                        searchQuery = searchQuery,
+                                        isCurrentMatch = isCurrentMatch,
+                                        onImageClick = onImageClick,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is MdBlock.Task -> {
+                    val indent = (block.level * 16).dp
+                    val isRtl = remember(block.text) { BidiUtils.isRtlText(block.text) }
+                    val blockDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                    CompositionLocalProvider(LocalLayoutDirection provides blockDirection) {
+                        Row(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = indent)
+                                    .padding(vertical = 1.dp),
+                            verticalAlignment = Alignment.Top,
+                        ) {
+                            Icon(
+                                imageVector =
+                                    if (block.checked) {
+                                        Icons.Outlined.CheckBox
+                                    } else {
+                                        Icons.Outlined.CheckBoxOutlineBlank
+                                    },
+                                contentDescription = null,
+                                tint =
+                                    if (block.checked) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        textColor.copy(
+                                            alpha = 0.6f,
+                                        )
+                                    },
+                                modifier = Modifier.size(18.dp).padding(top = 1.dp, end = 6.dp),
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                MarkdownInlineText(
+                                    text = block.text,
+                                    isRtlOverride = isRtl,
+                                    textColor = textColor,
+                                    latexMeasurer = latexMeasurer,
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            textDirection = bidiTextDirection(isRtl),
+                                        ),
+                                    searchQuery = searchQuery,
+                                    isCurrentMatch = isCurrentMatch,
+                                    linkColor = linkColor,
+                                    highlights = highlights,
+                                )
+                                if (block.nestedSource.isNotEmpty()) {
+                                    MarkdownText(
+                                        text = block.nestedSource,
+                                        textColor = textColor,
+                                        searchQuery = searchQuery,
+                                        isCurrentMatch = isCurrentMatch,
+                                        onImageClick = onImageClick,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is MdBlock.Ordered -> {
+                    val indent = (block.level * 16).dp
+                    val isRtl = remember(block.text) { BidiUtils.isRtlText(block.text) }
+                    val blockDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                    CompositionLocalProvider(LocalLayoutDirection provides blockDirection) {
+                        Row(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = indent)
+                                    .padding(vertical = 1.dp),
+                            verticalAlignment = Alignment.Top,
+                        ) {
+                            Text(
+                                text = "${block.index}.",
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(end = 6.dp),
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                MarkdownInlineText(
+                                    text = block.text,
+                                    isRtlOverride = isRtl,
+                                    textColor = textColor,
+                                    latexMeasurer = latexMeasurer,
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            textDirection = bidiTextDirection(isRtl),
+                                        ),
+                                    searchQuery = searchQuery,
+                                    isCurrentMatch = isCurrentMatch,
+                                    linkColor = linkColor,
+                                    highlights = highlights,
+                                )
+                                if (block.nestedSource.isNotEmpty()) {
+                                    MarkdownText(
+                                        text = block.nestedSource,
+                                        textColor = textColor,
+                                        searchQuery = searchQuery,
+                                        isCurrentMatch = isCurrentMatch,
+                                        onImageClick = onImageClick,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is MdBlock.Quote -> {
+                    val isRtl = remember(block.text) { BidiUtils.isRtlText(block.text) }
+                    val blockDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                    CompositionLocalProvider(LocalLayoutDirection provides blockDirection) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).padding(vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .width(3.dp)
+                                        .fillMaxHeight()
+                                        .clip(RoundedCornerShape(2.dp))
+                                        .background(textColor.copy(alpha = 0.35f)),
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            val nestedBlocks = remember(block.text) { parseBlocks(block.text) }
+                            if (nestedBlocks.size == 1 && nestedBlocks.single() is MdBlock.Paragraph) {
+                                MarkdownInlineText(
+                                    text = block.text,
+                                    isRtlOverride = isRtl,
+                                    textColor = textColor,
+                                    latexMeasurer = latexMeasurer,
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            fontStyle = FontStyle.Italic,
+                                            textDirection = bidiTextDirection(isRtl),
+                                        ),
+                                    searchQuery = searchQuery,
+                                    isCurrentMatch = isCurrentMatch,
+                                    linkColor = linkColor,
+                                    highlights = highlights,
+                                    modifier = Modifier.weight(1f),
+                                )
+                            } else {
+                                MarkdownText(
+                                    text = block.text,
+                                    textColor = textColor,
+                                    searchQuery = searchQuery,
+                                    isCurrentMatch = isCurrentMatch,
+                                    modifier = Modifier.weight(1f),
+                                    onImageClick = onImageClick,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                is MdBlock.Video, is MdBlock.Image -> {
+                    // Standalone build renders media references as plain links (no media stack).
+                    val uri = if (block is MdBlock.Image) block.uri else (block as MdBlock.Video).uri
+                    val label = (block as? MdBlock.Image)?.alt?.takeIf { it.isNotBlank() }
+                    Text(
+                        text = if (label != null) "[$label] ${MarkdownMediaResolver.resolveImageUrl(uri)}" else MarkdownMediaResolver.resolveImageUrl(uri),
+                        color = textColor,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 4.dp),
+                    )
+                }
+
+                is MdBlock.DefList -> {
+                    val isRtl =
+                        remember(block.items) {
+                            block.items.any { item ->
+                                BidiUtils.isRtlText(item.term) ||
+                                    item.definitions.any { BidiUtils.isRtlText(it) }
+                            }
+                        }
+                    val blockDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                    CompositionLocalProvider(LocalLayoutDirection provides blockDirection) {
+                        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
+                            block.items.forEach { item ->
+                                val itemRtl = BidiUtils.isRtlText(item.term)
+                                Text(
+                                    text = if (itemRtl) BidiUtils.anchorTrailingRtl(item.term) else item.term,
+                                    color = textColor,
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            textDirection = bidiTextDirection(itemRtl),
+                                        ),
+                                )
+                                item.definitions.forEach { def ->
+                                    val defRtl = BidiUtils.isRtlText(def)
+                                    Text(
+                                        text = if (defRtl) BidiUtils.anchorTrailingRtl(def) else def,
+                                        color = textColor,
+                                        style =
+                                            MaterialTheme.typography.bodyMedium.copy(
+                                                textDirection = bidiTextDirection(defRtl),
+                                            ),
+                                        modifier = Modifier.padding(start = 16.dp, bottom = 2.dp),
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
+                            }
+                        }
+                    }
+                }
+
+                is MdBlock.Table -> {
+                    MarkdownTable(
+                        block = block,
+                        textColor = textColor,
+                        latexMeasurer = latexMeasurer,
+                        searchQuery = searchQuery,
+                        isCurrentMatch = isCurrentMatch,
+                        linkColor = linkColor,
+                        highlights = highlights,
+                    )
+                }
+
+                is MdBlock.Footnotes -> {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 6.dp),
+                        color = textColor.copy(alpha = 0.2f),
+                    )
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Footnotes",
+                            color = textColor,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(bottom = 2.dp),
+                        )
+                        block.notes.forEach { note ->
+                            val isRtl = remember(note.text) { BidiUtils.isRtlText(note.text) }
+                            val noteDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                            CompositionLocalProvider(LocalLayoutDirection provides noteDirection) {
+                                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp)) {
+                                    Text(
+                                        text = "[${note.id}] ",
+                                        color = textColor,
+                                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                    )
+                                    MarkdownInlineText(
+                                        text = note.text,
+                                        isRtlOverride = isRtl,
+                                        textColor = textColor,
+                                        latexMeasurer = latexMeasurer,
+                                        style =
+                                            MaterialTheme.typography.bodySmall.copy(
+                                                textDirection = bidiTextDirection(isRtl),
+                                            ),
+                                        searchQuery = searchQuery,
+                                        isCurrentMatch = isCurrentMatch,
+                                        linkColor = linkColor,
+                                        highlights = highlights,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is MdBlock.Paragraph -> {
+                    val isRtl = remember(block.text) { BidiUtils.isRtlText(block.text) }
+                    val blockDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
+                    CompositionLocalProvider(LocalLayoutDirection provides blockDirection) {
+                        MarkdownInlineText(
+                            text = block.text,
+                            isRtlOverride = isRtl,
+                            textColor = textColor,
+                            latexMeasurer = latexMeasurer,
+                            style =
+                                MaterialTheme.typography.bodyMedium.copy(
+                                    textDirection = bidiTextDirection(isRtl),
+                                ),
+                            searchQuery = searchQuery,
+                            isCurrentMatch = isCurrentMatch,
+                            linkColor = linkColor,
+                            highlights = highlights,
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+internal fun parseInline(
+    text: String,
+    textColor: Color,
+    searchQuery: String,
+    isCurrentMatch: Boolean,
+    linkColor: Color,
+    highlights: SearchHighlightColors,
+    isRtl: Boolean = BidiUtils.isRtlText(text),
+): AnnotatedString =
+    MarkdownInlineStyler.parseInline(
+        text = text,
+        textColor = textColor,
+        searchQuery = searchQuery,
+        isCurrentMatch = isCurrentMatch,
+        linkColor = linkColor,
+        highlights = highlights,
+        isRtl = isRtl,
+    )

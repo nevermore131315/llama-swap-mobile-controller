@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext traffic globally to support trusted LAN IP connections -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

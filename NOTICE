@@ -1,0 +1,6 @@
+Llama Swap Mobile Controller
+Unofficial — not affiliated with the llama-swap project or Meta.
+
+This product is derived from Hermes Mobile (https://github.com/Hy4ri/hermes-mobile),
+licensed under the Apache License, Version 2.0. It has been modified: the Hermes
+Agent client was removed, and a standalone llama-swap control panel was added.

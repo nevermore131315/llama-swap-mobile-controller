@@ -1,0 +1,34 @@
+# Release keystore (local copy — stored as GitHub secret)
+*.jks
+*.keystore
+!app/debug.keystore
+
+# Android / Gradle
+build/
+.gradle/
+local.properties
+*.iml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Nix / Gradle user home (per-repo GRADLE_USER_HOME from flake.nix)
+.gradle-home/
+
+ktlint
+.hermes/plans/
+
+# Local workspace artifacts and logs
+*.py
+!.github/scripts/*.py
+.kotlin/
+*.db
+
+
+# direnv
+.direnv/
+hermes-chat-redesign.html
+app-debug-835.apk

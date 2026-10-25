@@ -1,0 +1,439 @@
+package io.github.nevermore131315.llamaswapcontroller.ui.common
+
+import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
+import io.github.nevermore131315.llamaswapcontroller.R
+import io.github.nevermore131315.llamaswapcontroller.theme.HermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalSpacing
+
+// ── SectionHeader — sticky-ish section label for grouped content ────────
+
+@Composable
+fun SectionHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    trailing: (@Composable () -> Unit)? = null,
+) {
+    val spacing = LocalSpacing.current
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = spacing.md, vertical = spacing.sm),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold,
+        )
+        trailing?.invoke()
+    }
+}
+
+// ── StatusBadge — coloured pill with optional leading dot ──────────────
+
+@Composable
+fun StatusBadge(
+    text: String,
+    status: StatusBadgeType = StatusBadgeType.NEUTRAL,
+    modifier: Modifier = Modifier,
+) {
+    val spacing = LocalSpacing.current
+    val statusColors = LocalHermesStatusColors.current
+    val (bgColor, fgColor) =
+        statusBadgeColors(status, statusColors)
+            ?: (MaterialTheme.colorScheme.surfaceContainerHigh to MaterialTheme.colorScheme.onSurfaceVariant)
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        color = bgColor,
+    ) {
+        Row(
+            modifier =
+                Modifier.padding(
+                    horizontal = spacing.sm + 2.dp,
+                    vertical = spacing.xs,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(6.dp)
+                        .background(fgColor, RoundedCornerShape(50)),
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall,
+                color = fgColor,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+    }
+}
+
+enum class StatusBadgeType { SUCCESS, WARNING, ERROR, INFO, NEUTRAL }
+
+/** Exact fill/text pair shared by status badges and live-session indicators. */
+internal fun statusBadgeColors(
+    status: StatusBadgeType,
+    colors: HermesStatusColors,
+): Pair<Color, Color>? =
+    // PR #1417: on-status tokens belong on the status fill, not its container.
+    when (status) {
+        StatusBadgeType.SUCCESS -> colors.success to colors.onSuccess
+        StatusBadgeType.WARNING -> colors.warning to colors.onWarning
+        StatusBadgeType.ERROR -> colors.error to colors.onError
+        StatusBadgeType.INFO -> colors.info to colors.onInfo
+        StatusBadgeType.NEUTRAL -> null // Neutral badges use the active Material scheme.
+    }
+
+// ── ToggleRow — switch row with label + description ────────────────────
+
+@Composable
+fun ToggleRow(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+    icon: ImageVector? = null,
+) {
+    val spacing = LocalSpacing.current
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            ),
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(spacing.md),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.sm + 4.dp),
+            ) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    description?.let { desc ->
+                        Text(
+                            text = desc,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+            )
+        }
+    }
+}
+
+// ── SearchBar — M3 search field with clear button ──────────────────────
+
+@Composable
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String = "Search…",
+) {
+    val textColor = MaterialTheme.colorScheme.onSurface
+    BasicTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    shape = RoundedCornerShape(12.dp),
+                ).border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(12.dp),
+                ).padding(horizontal = 12.dp),
+        singleLine = true,
+        textStyle = MaterialTheme.typography.bodyMedium.copy(color = textColor),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        decorationBox = { innerTextField ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp),
+                )
+                Box(modifier = Modifier.weight(1f)) {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = placeholder,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        )
+                    }
+                    innerTextField()
+                }
+                if (query.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onQueryChange("") },
+                        modifier = Modifier.size(20.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.content_desc_clear_search),
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+            }
+        },
+    )
+}
+
+// ── FilterChipRow — horizontally scrollable filter chips ───────────────
+
+@Composable
+fun <T> FilterChipRow(
+    chips: List<T>,
+    selectedChip: T?,
+    onChipSelected: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues? = null,
+    chipLabel: @Composable (T) -> Unit = { Text(it.toString()) },
+) {
+    val spacing = LocalSpacing.current
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding =
+            contentPadding ?: PaddingValues(
+                horizontal = spacing.md,
+                vertical = spacing.xs,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+    ) {
+        items(chips, key = { it.toString() }) { chip ->
+            FilterChip(
+                selected = chip == selectedChip,
+                onClick = { onChipSelected(chip) },
+                label = { chipLabel(chip) },
+            )
+        }
+    }
+}
+
+// ── ManageableFilterRow — search + status chips for manageable entity lists ──
+
+/** Enabled/disabled status filter shared by Plugins, Toolsets, Channels and MCP lists. */
+enum class StatusFilter(
+    @StringRes val labelRes: Int,
+) {
+    ALL(R.string.skills_status_all),
+    ENABLED(R.string.skills_status_enabled),
+    DISABLED(R.string.skills_status_disabled),
+    ;
+
+    fun matches(enabled: Boolean): Boolean =
+        when (this) {
+            ALL -> true
+            ENABLED -> enabled
+            DISABLED -> !enabled
+        }
+}
+
+@Composable
+fun ManageableFilterRow(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    placeholder: String,
+    status: StatusFilter,
+    onStatusChange: (StatusFilter) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        SearchBar(query = query, onQueryChange = onQueryChange, placeholder = placeholder)
+        FilterChipRow(
+            chips = StatusFilter.entries,
+            selectedChip = status,
+            onChipSelected = onStatusChange,
+            contentPadding = PaddingValues(vertical = LocalSpacing.current.xs),
+            chipLabel = { Text(stringResource(it.labelRes)) },
+        )
+    }
+}
+
+// ── StatCard — metric display card for dashboard screens ───────────────
+
+@Composable
+fun StatCard(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    accentColor: Color = MaterialTheme.colorScheme.primary,
+) {
+    val spacing = LocalSpacing.current
+    Card(
+        modifier = modifier,
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            ),
+    ) {
+        Column(
+            modifier = Modifier.padding(spacing.md),
+            verticalArrangement = Arrangement.spacedBy(spacing.xs),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+            ) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = accentColor,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+// ── InfoRow — label/value row for detail screens ──────────────────────
+
+@Composable
+fun InfoRow(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+) {
+    val spacing = LocalSpacing.current
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = spacing.md, vertical = spacing.sm),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
+// ── ToastEffect — helper for one-shot toast messages ───────────────────
+
+/**
+ * One-shot screen feedback. Plain messages stay a short toast. When [isError] is
+ * true (explicit severity from the ViewModel, never guessed from the text) the
+ * message goes to the screen's snackbar with a Copy action and a long lifetime;
+ * see [ActionFeedbackEffect].
+ */
+@Composable
+fun ToastEffect(
+    toastMessage: String?,
+    onClearToast: () -> Unit,
+    isError: Boolean = false,
+) {
+    if (isError) {
+        ActionFeedbackEffect(message = toastMessage, onConsumed = onClearToast)
+        return
+    }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    androidx.compose.runtime.LaunchedEffect(toastMessage) {
+        toastMessage?.let { msg ->
+            android.widget.Toast
+                .makeText(context, msg, android.widget.Toast.LENGTH_SHORT)
+                .show()
+            onClearToast()
+        }
+    }
+}
