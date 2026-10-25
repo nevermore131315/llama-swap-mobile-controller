@@ -1,0 +1,15 @@
+Llama Swap Mobile Controller is a small Android companion for llama-swap, the lightweight proxy that starts and stops llama.cpp models on demand.
+
+Point the app at your llama-swap server's URL once (plain http on your LAN or tailnet is all it needs) and you get five tabs:
+
+- Models: see what is loaded, load or unload any model, with a confirmation step before a running model gets evicted.
+- Activity: a live view of requests flowing through the proxy.
+- Playground: a streaming chat against whichever model is currently loaded, with Markdown, LaTeX, and code highlighting.
+- Logs: the proxy's own log stream with All/Proxy/Upstream/HTTP filters, so you can watch health checks and swap decisions live.
+- Performance: GPUs, VRAM, CPU, and RAM of the server, straight from llama-swap.
+
+No cloud, no account, no telemetry. The app talks only to the server you configure.
+
+Notes:
+- Unofficial project. Not affiliated with, or endorsed by, the llama-swap or Meta projects.
+- Derived from Hy4ri/hermes-mobile (Apache-2.0), which provided the app shell.
