@@ -60,7 +60,7 @@ sealed interface NavIcon {
  * Single source of truth for whether the modal navigation drawer's swipe gestures
  * should be enabled for the currently-composed screen.
  *
- * Each [HermesScaffold] (or [DisableDrawerGestures]) reconciles its preference into
+ * Each [AppScaffold] (or [DisableDrawerGestures]) reconciles its preference into
  * the singleton instance via a [SideEffect]; `ModalNavigationDrawer` in `Navigation.kt`
  * reads [enabled] and passes it straight to Material's `gesturesEnabled` parameter.
  *
@@ -95,7 +95,7 @@ class DrawerGestureController(
 /**
  * CompositionLocal that exposes the active [DrawerGestureController].
  *
- * Provided by `MainNavigation` and read both by [HermesScaffold] (to reconcile a
+ * Provided by `MainNavigation` and read both by [AppScaffold] (to reconcile a
  * screen's preference) and by `ModalNavigationDrawer` (to gate gestures).
  */
 val LocalDrawerGestureController =
@@ -104,11 +104,11 @@ val LocalDrawerGestureController =
     }
 
 /**
- * Opt out of drawer gestures for a screen that does NOT use [HermesScaffold].
+ * Opt out of drawer gestures for a screen that does NOT use [AppScaffold].
  *
  * Used by full-bleed entry screens (Landing, AuthLogin) that
  * render their own layout. Scaffold-based screens should instead pass
- * `drawerGesturesEnabled = false` to [HermesScaffold].
+ * `drawerGesturesEnabled = false` to [AppScaffold].
  */
 @Composable
 fun DisableDrawerGestures() {
@@ -131,7 +131,7 @@ fun DisableDrawerGestures() {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HermesScaffold(
+fun AppScaffold(
     modifier: Modifier = Modifier,
     title: @Composable () -> Unit,
     navigationIcon: NavIcon? = null,

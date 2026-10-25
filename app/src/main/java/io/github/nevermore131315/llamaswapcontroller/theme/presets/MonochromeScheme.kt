@@ -1,7 +1,7 @@
 package io.github.nevermore131315.llamaswapcontroller.theme.presets
 
 import androidx.compose.ui.graphics.Color
-import io.github.nevermore131315.llamaswapcontroller.theme.HermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.AppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.PaletteColors
 import io.github.nevermore131315.llamaswapcontroller.theme.buildTheme
 
@@ -96,7 +96,7 @@ val MonochromeTheme =
                 outlineVariant = MonoDarkOutlineVariant,
                 scrim = Color.Black,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = MonoDarkTertiary,
                         successContainer = MonoDarkContainerHigh,
                         onSuccess = MonoDarkBg,
@@ -158,7 +158,7 @@ val MonochromeTheme =
                 outlineVariant = MonoLightOutlineVariant,
                 scrim = Color.Black,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = MonoLightTertiary,
                         successContainer = MonoLightContainerHigh,
                         onSuccess = MonoLightBg,

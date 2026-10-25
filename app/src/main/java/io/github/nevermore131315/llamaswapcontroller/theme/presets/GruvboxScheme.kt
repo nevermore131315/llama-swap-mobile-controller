@@ -1,7 +1,7 @@
 package io.github.nevermore131315.llamaswapcontroller.theme.presets
 
 import androidx.compose.ui.graphics.Color
-import io.github.nevermore131315.llamaswapcontroller.theme.HermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.AppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.PaletteColors
 import io.github.nevermore131315.llamaswapcontroller.theme.buildTheme
 
@@ -109,7 +109,7 @@ val GruvboxTheme =
                 outlineVariant = GruvboxDarkBg3,
                 scrim = GruvboxDarkBg0,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = GruvboxBrightGreen,
                         successContainer = GruvboxDarkBg3,
                         onSuccess = GruvboxDarkBg0,
@@ -171,7 +171,7 @@ val GruvboxTheme =
                 outlineVariant = GruvboxLightBg3,
                 scrim = GruvboxLightBg0,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = GruvboxFadedGreen,
                         successContainer = GruvboxLightBg3,
                         onSuccess = GruvboxOnFadedGreen,

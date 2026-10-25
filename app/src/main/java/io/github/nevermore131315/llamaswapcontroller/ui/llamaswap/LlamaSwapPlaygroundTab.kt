@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import io.github.nevermore131315.llamaswapcontroller.R
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapModel
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapState
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.LocalSpacing
 import io.github.nevermore131315.llamaswapcontroller.ui.chat.MarkdownText
 import io.github.nevermore131315.llamaswapcontroller.ui.common.EmptyState
@@ -189,7 +189,7 @@ private fun PickerItem(model: LlamaSwapModel) {
             fontFamily = FontFamily.Monospace,
             color =
                 if (model.state == LlamaSwapState.READY) {
-                    LocalHermesStatusColors.current.success
+                    LocalAppStatusColors.current.success
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:usesCleartextTraffic="${usesCleartextTraffic}"
-        android:theme="@style/Theme.HermesControl">
+        android:theme="@style/Theme.LlamaSwapController">
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustResize"

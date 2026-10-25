@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 /**
  * Wire + domain types for a llama-swap server (https://github.com/mostlygeek/llama-swap).
  *
- * llama-swap is a separate server from the Hermes dashboard: it has its own base URL
+ * llama-swap is a separate server from the Hermes Agent dashboard: it has its own base URL
  * (see [LlamaSwapSettings]), no auth, and its own JSON conventions (mixed camelCase and
  * snake_case), so it uses [LlamaSwapJson] rather than the dashboard's SnakeCase Json.
  */

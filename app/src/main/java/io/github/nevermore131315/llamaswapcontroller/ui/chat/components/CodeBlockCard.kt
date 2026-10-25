@@ -17,7 +17,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.nevermore131315.llamaswapcontroller.theme.CodeTerminalText
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.SearchHighlightColors
 import io.github.nevermore131315.llamaswapcontroller.theme.searchHighlightColors
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +36,7 @@ fun CodeBlockCard(
     searchQuery: String = "",
     isCurrentMatch: Boolean = false,
 ) {
-    val highlights = searchHighlightColors(LocalHermesStatusColors.current)
+    val highlights = searchHighlightColors(LocalAppStatusColors.current)
     val highlighted by produceState(
         initialValue = remember(code) { AnnotatedString(code) },
         key1 = code,

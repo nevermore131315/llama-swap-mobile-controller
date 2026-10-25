@@ -48,7 +48,7 @@ import io.github.nevermore131315.llamaswapcontroller.R
 import androidx.compose.material3.AlertDialog
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapModel
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapState
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.LocalSpacing
 import io.github.nevermore131315.llamaswapcontroller.ui.common.EmptyState
 import io.github.nevermore131315.llamaswapcontroller.ui.common.ErrorState
@@ -143,7 +143,7 @@ private fun ConnectionBar(
     onUnloadAll: () -> Unit,
 ) {
     val spacing = LocalSpacing.current
-    val status = LocalHermesStatusColors.current
+    val status = LocalAppStatusColors.current
     val connection = state.connection
     Row(
         modifier = Modifier.fillMaxWidth().padding(start = spacing.md, end = spacing.sm, top = spacing.sm),
@@ -439,7 +439,7 @@ private fun PlaygroundLockNote() {
         Icon(
             Icons.Filled.Lock,
             contentDescription = null,
-            tint = LocalHermesStatusColors.current.info,
+            tint = LocalAppStatusColors.current.info,
             modifier = Modifier.size(16.dp),
         )
         Spacer(Modifier.width(spacing.sm))

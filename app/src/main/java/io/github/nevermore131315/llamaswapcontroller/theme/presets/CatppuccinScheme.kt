@@ -1,7 +1,7 @@
 package io.github.nevermore131315.llamaswapcontroller.theme.presets
 
 import androidx.compose.ui.graphics.Color
-import io.github.nevermore131315.llamaswapcontroller.theme.HermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.AppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.PaletteColors
 import io.github.nevermore131315.llamaswapcontroller.theme.buildTheme
 
@@ -107,7 +107,7 @@ val CatppuccinTheme =
                 outlineVariant = MochaSurface1,
                 scrim = MochaCrust,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = MochaGreen,
                         successContainer = MochaSurface0,
                         onSuccess = MochaCrust,
@@ -169,7 +169,7 @@ val CatppuccinTheme =
                 outlineVariant = LatteSurface1,
                 scrim = LatteCrust,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = LatteGreen,
                         successContainer = LatteSurface0,
                         onSuccess = LatteDeepInk,

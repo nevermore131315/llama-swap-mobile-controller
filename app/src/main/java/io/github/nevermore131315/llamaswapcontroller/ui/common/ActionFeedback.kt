@@ -22,7 +22,7 @@ import io.github.nevermore131315.llamaswapcontroller.R
 import kotlinx.coroutines.launch
 
 /**
- * Snackbar host owned by the enclosing [HermesScaffold]. It lives and dies with
+ * Snackbar host owned by the enclosing [AppScaffold]. It lives and dies with
  * the screen, so queued feedback cannot outlive it or reach another screen.
  * Null outside a scaffold; [ActionFeedbackEffect] then falls back to a toast.
  */

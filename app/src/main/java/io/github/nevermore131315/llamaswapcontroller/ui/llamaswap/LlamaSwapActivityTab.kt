@@ -46,7 +46,7 @@ import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapAct
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapActivityStats
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapHistogram
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapStatusKind
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.LocalSpacing
 import io.github.nevermore131315.llamaswapcontroller.ui.common.EmptyState
 import io.github.nevermore131315.llamaswapcontroller.ui.common.ErrorState
@@ -143,7 +143,7 @@ private const val AGE_TICK_MS = 15_000L
 @Composable
 private fun ActivityStatusBar(state: LlamaSwapActivityUiState) {
     val spacing = LocalSpacing.current
-    val status = LocalHermesStatusColors.current
+    val status = LocalAppStatusColors.current
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = spacing.md, vertical = spacing.sm)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             when (state.mode) {

@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
  * A theme preset is a single [ThemePalette] built from raw [PaletteColors]
  * specs. Every preset file has the same skeleton: fill in the colors, done.
  * The mapping from raw colors to the Material 3 [ColorScheme] slots and the
- * [HermesStatusColors] model lives here — no per-preset behavior.
+ * [AppStatusColors] model lives here — no per-preset behavior.
  *
  * A theme can declare which modes it ships via [ThemeMode]:
  * - [ThemeMode.FULL] — both dark and light palettes.
@@ -76,7 +76,7 @@ data class PaletteColors(
     val outline: Color,
     val outlineVariant: Color,
     val scrim: Color,
-    val status: HermesStatusColors,
+    val status: AppStatusColors,
 )
 
 /** A complete theme — one per preset file, same shape everywhere. */
@@ -99,12 +99,12 @@ data class ThemePalette(
 
     val darkScheme: ColorScheme? by lazy { dark?.let(::darkSchemeOf) }
     val lightScheme: ColorScheme? by lazy { light?.let(::lightSchemeOf) }
-    val darkStatus: HermesStatusColors? by lazy { dark?.status }
-    val lightStatus: HermesStatusColors? by lazy { light?.status }
+    val darkStatus: AppStatusColors? by lazy { dark?.status }
+    val lightStatus: AppStatusColors? by lazy { light?.status }
 
     fun schemeFor(dark: Boolean): ColorScheme? = if (dark) darkScheme else lightScheme
 
-    fun statusFor(dark: Boolean): HermesStatusColors? = if (dark) darkStatus else lightStatus
+    fun statusFor(dark: Boolean): AppStatusColors? = if (dark) darkStatus else lightStatus
 }
 
 /** Full theme: bespoke dark + light palettes. */

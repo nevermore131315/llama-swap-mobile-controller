@@ -33,8 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevermore131315.llamaswapcontroller.R
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapSettingsStore
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
-import io.github.nevermore131315.llamaswapcontroller.ui.common.HermesScaffold
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
+import io.github.nevermore131315.llamaswapcontroller.ui.common.AppScaffold
 import io.github.nevermore131315.llamaswapcontroller.ui.common.NavIcon
 import io.github.nevermore131315.llamaswapcontroller.ui.common.TestConnectionButton
 
@@ -46,7 +46,7 @@ fun LlamaSwapSettingsPage(onBack: () -> Unit) {
         viewModel { LlamaSwapSettingsViewModel(LlamaSwapSettingsStore.get(context)) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    HermesScaffold(
+    AppScaffold(
         title = { Text(stringResource(R.string.llamaswap_settings_title)) },
         navigationIcon = NavIcon.Back(onBack),
         drawerGesturesEnabled = false,
@@ -101,7 +101,7 @@ fun LlamaSwapSettingsPage(onBack: () -> Unit) {
 
 @Composable
 private fun TestResult(result: LlamaSwapTestResult) {
-    val status = LocalHermesStatusColors.current
+    val status = LocalAppStatusColors.current
     val (icon, tint, text) =
         when (result) {
             is LlamaSwapTestResult.Success -> {

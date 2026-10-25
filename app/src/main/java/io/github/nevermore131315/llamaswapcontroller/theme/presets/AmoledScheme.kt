@@ -1,7 +1,7 @@
 package io.github.nevermore131315.llamaswapcontroller.theme.presets
 
 import androidx.compose.ui.graphics.Color
-import io.github.nevermore131315.llamaswapcontroller.theme.HermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.AppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.PaletteColors
 import io.github.nevermore131315.llamaswapcontroller.theme.buildThemeDarkOnly
 
@@ -85,7 +85,7 @@ val AmoledTheme =
                 outlineVariant = AmoledOutlineVariant,
                 scrim = Color.Black,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = AmoledTertiary,
                         successContainer = AmoledContainerHigh,
                         onSuccess = AmoledFloor,

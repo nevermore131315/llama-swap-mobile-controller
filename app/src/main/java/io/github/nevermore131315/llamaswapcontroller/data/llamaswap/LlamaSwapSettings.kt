@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
-/** The llama-swap server address, independent of the Hermes connection profiles. */
+/** The llama-swap server address, independent of the Hermes Agent connection profiles. */
 interface LlamaSwapSettings {
     val baseUrl: StateFlow<String>
 
@@ -36,7 +36,7 @@ interface LlamaSwapSettings {
 
 /**
  * SharedPreferences-backed [LlamaSwapSettings]. Kept out of the versioned ServerStore on
- * purpose: the llama-swap server is independent of the Hermes connection profiles.
+ * purpose: the llama-swap server is independent of the Hermes Agent connection profiles.
  */
 class LlamaSwapSettingsStore private constructor(
     private val prefs: SharedPreferences,

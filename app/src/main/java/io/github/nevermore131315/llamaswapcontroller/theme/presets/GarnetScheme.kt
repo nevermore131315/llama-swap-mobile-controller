@@ -1,7 +1,7 @@
 package io.github.nevermore131315.llamaswapcontroller.theme.presets
 
 import androidx.compose.ui.graphics.Color
-import io.github.nevermore131315.llamaswapcontroller.theme.HermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.AppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.PaletteColors
 import io.github.nevermore131315.llamaswapcontroller.theme.buildTheme
 
@@ -104,7 +104,7 @@ val GarnetTheme =
                 outlineVariant = GarnetDarkBg3,
                 scrim = GarnetDarkBg0,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = GarnetBrightGreen,
                         successContainer = GarnetDarkBg3,
                         onSuccess = GarnetDarkBg0,
@@ -166,7 +166,7 @@ val GarnetTheme =
                 outlineVariant = GarnetLightBg3,
                 scrim = GarnetLightBg0,
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = GarnetFadedGreen,
                         successContainer = GarnetLightBg3,
                         onSuccess = GarnetLightBg0,

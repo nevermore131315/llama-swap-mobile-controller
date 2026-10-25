@@ -30,7 +30,7 @@ import io.github.nevermore131315.llamaswapcontroller.R
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapSettings
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapSettingsStore
 import io.github.nevermore131315.llamaswapcontroller.ui.common.EmptyState
-import io.github.nevermore131315.llamaswapcontroller.ui.common.HermesScaffold
+import io.github.nevermore131315.llamaswapcontroller.ui.common.AppScaffold
 import io.github.nevermore131315.llamaswapcontroller.ui.common.NavIcon
 import kotlinx.coroutines.flow.map
 
@@ -106,7 +106,7 @@ fun LlamaSwapScreen(
         onStopOrDispose { perfViewModel.stop() }
     }
 
-    HermesScaffold(
+    AppScaffold(
         title = { Text(stringResource(R.string.screen_llamaswap)) },
         isRefreshing =
             when {
@@ -140,7 +140,7 @@ fun LlamaSwapScreen(
                 onAction = { onOpenSettings() },
                 modifier = Modifier.fillMaxSize(),
             )
-            return@HermesScaffold
+            return@AppScaffold
         }
         Column(modifier = Modifier.fillMaxSize()) {
             PrimaryScrollableTabRow(selectedTabIndex = selectedTab, edgePadding = 0.dp) {

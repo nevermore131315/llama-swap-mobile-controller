@@ -263,7 +263,7 @@
 
     <!-- Llama-swap settings page -->
     <string name="llamaswap_settings_title">Llama-swap</string>
-    <string name="llamaswap_settings_desc">Base URL of the llama-swap server. Separate from the Hermes connection; llama-swap has no authentication.</string>
+    <string name="llamaswap_settings_desc">Base URL of the llama-swap server. Separate from the Hermes Agent connection; llama-swap has no authentication.</string>
     <string name="llamaswap_settings_url_label">llama-swap URL</string>
     <string name="llamaswap_settings_url_placeholder">http://192.168.1.10:8080</string>
     <string name="llamaswap_settings_url_invalid">Enter an http:// or https:// URL</string>

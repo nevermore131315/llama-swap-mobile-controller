@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import io.github.nevermore131315.llamaswapcontroller.R
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.GpuSeries
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.SysSample
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.LocalSpacing
 import io.github.nevermore131315.llamaswapcontroller.ui.common.EmptyState
 import io.github.nevermore131315.llamaswapcontroller.ui.common.ErrorState
@@ -131,7 +131,7 @@ private const val SPARK_POINTS = 120
 @Composable
 private fun PerfStatusLine(state: LlamaSwapPerformanceUiState) {
     val spacing = LocalSpacing.current
-    val status = LocalHermesStatusColors.current
+    val status = LocalAppStatusColors.current
     val now = rememberTickingClock()
     val locale = LocalConfiguration.current.locales[0]
     val zone = remember { ZoneId.systemDefault() }

@@ -41,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import io.github.nevermore131315.llamaswapcontroller.R
-import io.github.nevermore131315.llamaswapcontroller.theme.HermesStatusColors
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.AppStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.LocalSpacing
 
 // ── SectionHeader — sticky-ish section label for grouped content ────────
@@ -81,7 +81,7 @@ fun StatusBadge(
     modifier: Modifier = Modifier,
 ) {
     val spacing = LocalSpacing.current
-    val statusColors = LocalHermesStatusColors.current
+    val statusColors = LocalAppStatusColors.current
     val (bgColor, fgColor) =
         statusBadgeColors(status, statusColors)
             ?: (MaterialTheme.colorScheme.surfaceContainerHigh to MaterialTheme.colorScheme.onSurfaceVariant)
@@ -120,7 +120,7 @@ enum class StatusBadgeType { SUCCESS, WARNING, ERROR, INFO, NEUTRAL }
 /** Exact fill/text pair shared by status badges and live-session indicators. */
 internal fun statusBadgeColors(
     status: StatusBadgeType,
-    colors: HermesStatusColors,
+    colors: AppStatusColors,
 ): Pair<Color, Color>? =
     // PR #1417: on-status tokens belong on the status fill, not its container.
     when (status) {

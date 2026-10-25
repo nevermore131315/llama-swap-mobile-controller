@@ -46,14 +46,14 @@ internal fun resolveColorScheme(
 internal fun resolveStatusColors(
     preset: ThemePreset,
     darkTheme: Boolean,
-): HermesStatusColors {
+): AppStatusColors {
     val theme = preset.palette()
     // DefaultTheme is FULL — its status colors are never null for either mode.
     return theme.statusFor(darkTheme) ?: requireNotNull(DefaultTheme.statusFor(darkTheme))
 }
 
 @Composable
-fun HermesControlTheme(
+fun AppTheme(
     themePreference: ThemePreference = LocalThemePreference.current,
     useDynamicColors: Boolean = false,
     themePreset: ThemePreset = ThemePreset.DEFAULT,
@@ -87,14 +87,14 @@ fun HermesControlTheme(
         LocalThemePreference provides themePreference,
         LocalThemePreset provides themePreset,
         LocalChatFontScale provides chatFontScale,
-        LocalHermesStatusColors provides statusColors,
+        LocalAppStatusColors provides statusColors,
         LocalSpacing provides SpacingDefaults,
         LocalMotion provides MotionDefaults,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
-            shapes = HermesShapes,
+            shapes = AppShapes,
             content = content,
         )
     }

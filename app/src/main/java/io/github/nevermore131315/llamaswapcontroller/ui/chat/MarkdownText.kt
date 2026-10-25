@@ -58,7 +58,7 @@ import com.hrm.latex.renderer.measure.LatexMeasurerState
 import com.hrm.latex.renderer.measure.rememberLatexMeasurer
 import com.hrm.latex.renderer.model.LatexConfig
 import com.hrm.latex.renderer.model.LatexTheme
-import io.github.nevermore131315.llamaswapcontroller.theme.LocalHermesStatusColors
+import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
 import io.github.nevermore131315.llamaswapcontroller.theme.SearchHighlightColors
 import io.github.nevermore131315.llamaswapcontroller.theme.searchHighlightColors
 import io.github.nevermore131315.llamaswapcontroller.ui.chat.markdown.BulletRun
@@ -100,7 +100,7 @@ fun MarkdownText(
     modifier: Modifier = Modifier,
     onImageClick: (ImageViewerModel) -> Unit = {},
 ) {
-    val statusColors = LocalHermesStatusColors.current
+    val statusColors = LocalAppStatusColors.current
     val highlights = searchHighlightColors(statusColors)
     val linkColor = MaterialTheme.colorScheme.primary
     val blocks = remember(text, isStreaming) { coalesceBulletRuns(parseBlocks(text)) }

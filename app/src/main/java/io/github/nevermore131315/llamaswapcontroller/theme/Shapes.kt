@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
  * | large        | 16 dp  | Large cards, bottom sheets, FAB       |
  * | extraLarge   | 28 dp  | Feature cards, full-bleed surfaces   |
  */
-val HermesShapes =
+val AppShapes =
     Shapes(
         extraSmall = RoundedCornerShape(4.dp),
         small = RoundedCornerShape(8.dp),

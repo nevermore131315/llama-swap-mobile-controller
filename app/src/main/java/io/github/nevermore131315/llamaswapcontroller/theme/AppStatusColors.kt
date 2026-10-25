@@ -16,10 +16,10 @@ import androidx.compose.ui.graphics.luminance
  * status fills, not on their container colors. Reusable status badges use
  * these fill/on pairs; error-container content uses `onErrorContainer`.
  *
- * Use [LocalHermesStatusColors] for all status indicators,
+ * Use [LocalAppStatusColors] for all status indicators,
  * badges, and semantic feedback colours.
  */
-data class HermesStatusColors(
+data class AppStatusColors(
     val success: Color,
     val successContainer: Color,
     val onSuccess: Color,
@@ -38,7 +38,7 @@ data class HermesStatusColors(
 
 /**
  * Theme-aware colors for markdown/search highlighting. Built per-composition from
- * [LocalHermesStatusColors] so `==mark==` and search terms follow the active preset
+ * [LocalAppStatusColors] so `==mark==` and search terms follow the active preset
  * instead of a fixed yellow.
  */
 data class SearchHighlightColors(
@@ -52,7 +52,7 @@ data class SearchHighlightColors(
 /** Build the highlight palette for the current theme preset. */
 internal fun onColorFor(color: Color): Color = if (color.luminance() > 0.5f) StatusGreyDark else StatusGreyLight
 
-internal fun searchHighlightColors(statusColors: HermesStatusColors): SearchHighlightColors =
+internal fun searchHighlightColors(statusColors: AppStatusColors): SearchHighlightColors =
     SearchHighlightColors(
         markupBackground = statusColors.warning.copy(alpha = 0.3f),
         searchBackground = statusColors.warningContainer,
@@ -61,9 +61,9 @@ internal fun searchHighlightColors(statusColors: HermesStatusColors): SearchHigh
         currentSearchForeground = statusColors.onWarning,
     )
 
-val LocalHermesStatusColors =
+val LocalAppStatusColors =
     staticCompositionLocalOf {
-        HermesStatusColors(
+        AppStatusColors(
             success = StatusGreen,
             successContainer = StatusGreenContainer,
             onSuccess = StatusGreyLight,

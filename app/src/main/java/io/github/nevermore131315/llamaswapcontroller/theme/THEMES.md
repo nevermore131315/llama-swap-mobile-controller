@@ -1,6 +1,6 @@
-# Themes
+# Theming
 
-How theming works in Hermes Mobile, and how to add or edit a theme.
+How theming works here, and how to add or edit a theme.
 
 This is the implementation guide. [DESIGN.md](../../../../../../../../DESIGN.md)
 defines visual and interaction requirements; the Kotlin sources define the actual
@@ -11,12 +11,12 @@ tokens. When changing tokens or behavior, update the relevant documentation too.
 All theme code is under:
 
 ```
-app/src/main/java/com/m57/hermescontrol/theme/
+app/src/main/java/io/github/nevermore131315/llamaswapcontroller/theme/
 ├── Theme.kt                       # dispatcher — mode fallback + dynamic colors
 ├── ThemeRegistry.kt               # single preset/palette registry
 ├── PaletteTemplate.kt             # the template — the ONE shape every theme follows
 ├── Color.kt                       # shared tokens for non-theme code (status fallbacks, code blocks, …)
-├── HermesStatusColors.kt          # semantic status color model (success/warning/error/info + on*)
+├── AppStatusColors.kt          # semantic status color model (success/warning/error/info + on*)
 ├── Type.kt / Shapes.kt            # typography + shape tokens
 ├── Spacing.kt / Motion.kt         # spacing + motion tokens
 └── presets/                       # one file per ThemePreset — same skeleton everywhere
@@ -34,7 +34,7 @@ app/src/main/java/com/m57/hermescontrol/theme/
 Every preset file is a **single `ThemePalette`** built from raw color specs via
 the template in `PaletteTemplate.kt`. A theme is a pure color spec: fill in
 `PaletteColors` (the Material slots) + the semantic status set
-(`HermesStatusColors`) and the app does the rest. No per-preset behavior, no
+(`AppStatusColors`) and the app does the rest. No per-preset behavior, no
 aliases, no shared-token imports.
 
 ```kotlin
@@ -45,7 +45,7 @@ val MyTheme =
                 primary = Color(0xFF…),
                 // …every slot…
                 status =
-                    HermesStatusColors(
+                    AppStatusColors(
                         success = Color(0xFF…),
                         // …
                     ),
@@ -138,7 +138,7 @@ stay in the UI’s exhaustive label mapping, outside the palette model.
 
 Dynamic (Material You) color on API 31+ can optionally override the preset scheme when
 `useDynamicColors = true` (defaults to `false`). Semantic status colors are always resolved from the
-active preset via `LocalHermesStatusColors`. The preset selector stays enabled
+active preset via `LocalAppStatusColors`. The preset selector stays enabled
 and explains that it controls status colors while Material You supplies app colors.
 
 ## Adding a new theme
