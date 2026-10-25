@@ -1,5 +1,20 @@
 package io.github.nevermore131315.llamaswapcontroller.ui.llamaswap
 
+import android.os.Build
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Switch
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.clip
+import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.ThemeSettingsStore
+import io.github.nevermore131315.llamaswapcontroller.theme.ThemePreference
+import io.github.nevermore131315.llamaswapcontroller.theme.ThemePreset
+import io.github.nevermore131315.llamaswapcontroller.theme.resolveColorScheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -95,6 +110,7 @@ fun LlamaSwapSettingsPage(onBack: () -> Unit) {
                 onTest = { if (state.isDraftValid) viewModel.testConnection() },
             )
             state.testResult?.let { TestResult(it) }
+            AppearanceSection()
         }
     }
 }
@@ -139,3 +155,131 @@ private fun TestResult(result: LlamaSwapTestResult) {
         }
     }
 }
+
+@Composable
+private fun AppearanceSection() {
+    val context = LocalContext.current.applicationContext
+    val store = remember { ThemeSettingsStore.get(context) }
+    val preference by store.preference.collectAsStateWithLifecycle()
+    val preset by store.preset.collectAsStateWithLifecycle()
+    val dynamic by store.dynamicColors.collectAsStateWithLifecycle()
+    val dark =
+        when (preference) {
+            ThemePreference.SYSTEM -> isSystemInDarkTheme()
+            ThemePreference.LIGHT -> false
+            ThemePreference.DARK -> true
+        }
+    val dynamicSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 12.dp)) {
+        Text(
+            text = stringResource(R.string.llamaswap_appearance_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ThemePreference.entries.forEach { option ->
+                FilterChip(
+                    selected = preference == option,
+                    onClick = { store.setPreference(option) },
+                    label = {
+                        Text(
+                            stringResource(
+                                when (option) {
+                                    ThemePreference.SYSTEM -> R.string.llamaswap_appearance_mode_system
+                                    ThemePreference.LIGHT -> R.string.llamaswap_appearance_mode_light
+                                    ThemePreference.DARK -> R.string.llamaswap_appearance_mode_dark
+                                },
+                            ),
+                        )
+                    },
+                )
+            }
+        }
+        if (dynamicSupported) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.llamaswap_appearance_dynamic),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f),
+                )
+                Switch(checked = dynamic, onCheckedChange = store::setDynamicColors)
+            }
+        }
+        if (!(dynamicSupported && dynamic)) {
+            ThemePreset.entries.forEach { option ->
+                PresetRow(
+                    preset = option,
+                    dark = dark,
+                    selected = preset == option,
+                    onClick = { store.setPreset(option) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PresetRow(
+    preset: ThemePreset,
+    dark: Boolean,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val scheme = resolveColorScheme(preset, dark)
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        border =
+            if (selected) {
+                BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+            } else {
+                null
+            },
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                listOf(scheme.background, scheme.primary, scheme.secondary, scheme.tertiary).forEach {
+                    Box(
+                        Modifier
+                            .size(22.dp)
+                            .clip(CircleShape)
+                            .background(it)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+                    )
+                }
+            }
+            Text(
+                text = preset.displayName(),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+            )
+            if (selected) {
+                Icon(
+                    Icons.Filled.CheckCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        }
+    }
+}
+
+private fun ThemePreset.displayName(): String =
+    when (this) {
+        ThemePreset.DEFAULT -> "Default"
+        ThemePreset.MONOCHROME -> "Monochrome"
+        ThemePreset.GRUVBOX -> "Gruvbox"
+        ThemePreset.CATPPUCCIN -> "Catppuccin"
+        ThemePreset.AMOLED -> "AMOLED"
+        ThemePreset.NORD -> "Nord"
+        ThemePreset.GARNET -> "Garnet"
+    }

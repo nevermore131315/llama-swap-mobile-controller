@@ -270,6 +270,11 @@
     <string name="llamaswap_settings_save">Save</string>
     <string name="llamaswap_settings_saved">Saved</string>
     <string name="llamaswap_settings_test_ok">Connected: llama-swap %1$s (%2$s, built %3$s)</string>
+    <string name="llamaswap_appearance_title">Appearance</string>
+    <string name="llamaswap_appearance_mode_system">System</string>
+    <string name="llamaswap_appearance_mode_light">Light</string>
+    <string name="llamaswap_appearance_mode_dark">Dark</string>
+    <string name="llamaswap_appearance_dynamic">Dynamic color (Material You)</string>
     <string name="llamaswap_settings_test_failed">Connection failed: %1$s</string>
 
     <!-- Logs tab -->

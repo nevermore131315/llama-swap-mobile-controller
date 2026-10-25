@@ -6,7 +6,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.ThemeSettingsStore
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import io.github.nevermore131315.llamaswapcontroller.theme.AppTheme
@@ -18,7 +21,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            AppTheme {
+            val themeStore = remember { ThemeSettingsStore.get(applicationContext) }
+            val preference by themeStore.preference.collectAsStateWithLifecycle()
+            val preset by themeStore.preset.collectAsStateWithLifecycle()
+            val dynamicColors by themeStore.dynamicColors.collectAsStateWithLifecycle()
+            AppTheme(
+                themePreference = preference,
+                themePreset = preset,
+                useDynamicColors = dynamicColors,
+            ) {
                 var showSettings by rememberSaveable { mutableStateOf(false) }
                 if (showSettings) {
                     BackHandler { showSettings = false }
