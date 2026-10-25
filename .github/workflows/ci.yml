@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Lint, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          validate-wrappers: true
+
+      - name: Lint + hardcoded-color guard
+        run: ./gradlew lintDebug checkColorLiterals
+
+      # --rerun on the test task: "up-to-date" is not "passed".
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --rerun
+
+      # A green test task with zero executed tests is a failure, not a pass.
+      - name: Require executed tests
+        env:
+          MIN_TESTS: '114'
+        run: |
+          python3 - <<'EOF'
+          import glob, os, sys, xml.etree.ElementTree as ET
+          files = glob.glob("app/build/test-results/testDebugUnitTest/*.xml")
+          total = failed = 0
+          for path in files:
+              root = ET.parse(path).getroot()
+              total += int(root.get("tests", 0))
+              failed += int(root.get("failures", 0)) + int(root.get("errors", 0))
+          minimum = int(os.environ["MIN_TESTS"])
+          print(f"{total} tests executed, {failed} failed, across {len(files)} classes (minimum {minimum})")
+          sys.exit(0 if total >= minimum and failed == 0 else 1)
+          EOF
+
+      - name: Build debug APK + compile release
+        run: ./gradlew assembleDebug compileReleaseKotlin
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reports
+          path: |
+            app/build/reports/
+          retention-days: 7
