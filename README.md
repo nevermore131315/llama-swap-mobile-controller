@@ -40,18 +40,17 @@ There's no account, no cloud service, and no telemetry. The app only talks to th
 
 Release APKs are on the [Releases page](https://github.com/nevermore131315/llama-swap-mobile-controller/releases). Each release includes `SHA256SUMS`.
 
-> Current builds are **release candidates** marked as GitHub pre-releases. Update apps skip pre-releases by default, so turn on the pre-release option shown below until 0.1.0 is final.
-
 ### Obtainium
 
 1. **Add App**, then paste `https://github.com/nevermore131315/llama-swap-mobile-controller`.
-2. Turn on **Include prereleases**.
-3. **Add**, then **Install**. Obtainium will keep the app updated after that.
+2. **Add**, then **Install**. Obtainium will keep the app updated after that.
+
+Optional: turn on **Include prereleases** if you want release candidates before they go final.
 
 ### Komi Store
 
 1. Search for or open `nevermore131315/llama-swap-mobile-controller`.
-2. Open the release list (pre-releases are listed there) and install the `llama-swap-mobile-controller-<version>.apk` asset.
+2. Open the release list and install the `llama-swap-mobile-controller-<version>.apk` asset.
 
 ### Manual
 
