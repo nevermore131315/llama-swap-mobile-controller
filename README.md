@@ -4,6 +4,18 @@ An Android app for controlling a [llama-swap](https://github.com/mostlygeek/llam
 
 > **Unofficial.** This project is not affiliated with or endorsed by the llama-swap project or Meta.
 
+## Screenshots
+
+<p>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1-models.png" width="19%" alt="Models tab">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2-activity.png" width="19%" alt="Activity tab">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-playground.png" width="19%" alt="Playground tab">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4-logs.png" width="19%" alt="Logs tab">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5-performance.png" width="19%" alt="Performance tab">
+</p>
+
+*Models · Activity · Playground · Logs · Performance*
+
 ## Features
 
 Five tabs, all fed by llama-swap's own HTTP API:
