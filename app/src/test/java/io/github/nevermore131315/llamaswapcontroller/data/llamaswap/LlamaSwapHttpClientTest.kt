@@ -249,15 +249,15 @@ class LlamaSwapHttpClientTest {
         }
 
     @Test
-    fun `performance 503 disabled body returns enabled false`() =
+    fun `performance 503 always reports disabled even with a non-json body`() =
         runBlocking {
             server.enqueue(MockResponse().setResponseCode(503).setBody("""{"enabled":false}"""))
             assertFalse(client.performance().enabled)
 
+            // llama-swap documents 503 as "monitoring disabled"; a future version could change the
+            // body, so any 503 degrades to disabled instead of surfacing a raw error.
             server.enqueue(MockResponse().setResponseCode(503).setBody("upstream busy"))
-            val error = runCatching { client.performance() }.exceptionOrNull()
-            assertTrue(error is LlamaSwapHttpException)
-            assertEquals(503, (error as LlamaSwapHttpException).code)
+            assertFalse(client.performance().enabled)
         }
 
     @Test

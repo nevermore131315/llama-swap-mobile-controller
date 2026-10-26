@@ -193,7 +193,9 @@ class LlamaSwapHttpClient(
                             runCatching { LlamaSwapJson.decodeFromString(LlamaSwapPerformance.serializer(), text) }
                                 .getOrNull()
                         if (disabled != null && !disabled.enabled) return disabled
-                        throw LlamaSwapHttpException(response.code, "HTTP ${response.code}: ${text.take(200).trim()}")
+                        // 503 is llama-swap's documented "monitoring disabled" answer; if a future
+                        // version changes that body too, treat it as disabled rather than crashing.
+                        return LlamaSwapPerformance(enabled = false)
                     }
                     response.requireSuccess()
                     response.body.string()

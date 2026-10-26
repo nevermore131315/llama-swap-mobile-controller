@@ -3,6 +3,7 @@ package io.github.nevermore131315.llamaswapcontroller.ui.llamaswap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapHttpClient
+import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapHttpException
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapPerformanceApi
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapSettings
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.PerformanceHistory
@@ -18,6 +19,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.SerializationException
+
+/** Why the server cannot serve performance stats (llama-swap v2 may change or drop the endpoint). */
+enum class PerformanceApiGap {
+    /** The server has no `/api/performance` (404/501) — app and llama-swap versions do not match. */
+    MissingEndpoint,
+
+    /** The endpoint answered but the payload could not be parsed — schema changed beyond defaults. */
+    UnparseablePayload,
+}
 
 data class LlamaSwapPerformanceUiState(
     val baseUrl: String = "",
@@ -27,8 +38,10 @@ data class LlamaSwapPerformanceUiState(
     val isRefreshing: Boolean = false,
     /** Last fetch failure; cleared by the next successful fetch. */
     val loadError: String? = null,
+    /** Set when the server itself cannot provide this feature; takes display priority over [loadError]. */
+    val unsupported: PerformanceApiGap? = null,
 ) {
-    val hasSnapshot: Boolean get() = enabled != null
+    val hasSnapshot: Boolean get() = enabled != null || unsupported != null
 }
 
 /**
@@ -93,11 +106,12 @@ class LlamaSwapPerformanceViewModel(
                 val response = api.performance(after = after)
                 _uiState.update {
                     if (!response.enabled) {
-                        it.copy(enabled = false, history = PerformanceHistory(), loadError = null)
+                        it.copy(enabled = false, history = PerformanceHistory(), loadError = null, unsupported = null)
                     } else {
                         val base = if (after == null) PerformanceHistory() else it.history
                         it.copy(
                             enabled = true,
+                            unsupported = null,
                             history = mergePerformance(base, response, WINDOW_MS),
                             loadError = null,
                         )
@@ -105,6 +119,31 @@ class LlamaSwapPerformanceViewModel(
                 }
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: LlamaSwapHttpException) {
+                // Version-skew signals get a feature notice instead of a raw HTTP dump: llama-swap
+                // promises compatibility for the core swap API but explicitly not for the
+                // experimental performance endpoints.
+                when {
+                    e.code == 404 || e.code == 501 -> {
+                        _uiState.update { it.copy(unsupported = PerformanceApiGap.MissingEndpoint, loadError = null) }
+                    }
+
+                    e.code == 503 -> {
+                        _uiState.update { it.copy(enabled = false, history = PerformanceHistory(), loadError = null) }
+                    }
+
+                    else -> {
+                        _uiState.update { it.copy(loadError = e.message ?: "HTTP ${e.code}") }
+                    }
+                }
+            } catch (e: SerializationException) {
+                _uiState.update {
+                    it.copy(
+                        unsupported = PerformanceApiGap.UnparseablePayload,
+                        loadError =
+                            e.message ?: e::class.simpleName,
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(loadError = e.message ?: e::class.simpleName) }
             }

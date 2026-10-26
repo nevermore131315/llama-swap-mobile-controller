@@ -292,6 +292,8 @@
     <string name="llamaswap_perf_updated">Latest sample %1$s · %2$s</string>
     <string name="llamaswap_perf_polling">Checking every %1$ds</string>
     <string name="llamaswap_perf_error_load">Couldn\'t load performance stats from %1$s: %2$s</string>
+    <string name="llamaswap_perf_unsupported_title">Performance stats not available</string>
+    <string name="llamaswap_perf_unsupported_desc">llama-swap at %1$s does not serve /api/performance, or its response could not be read. Performance monitoring is experimental there and its API may change — check for an app update, everything else keeps working.</string>
     <string name="llamaswap_perf_disabled_title">Performance monitoring is off</string>
     <string name="llamaswap_perf_disabled_desc">llama-swap at %1$s has performance monitoring disabled (performance.disabled in its config).</string>
     <string name="llamaswap_perf_empty_title">No samples yet</string>

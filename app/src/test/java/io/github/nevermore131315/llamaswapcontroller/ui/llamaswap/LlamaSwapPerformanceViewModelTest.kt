@@ -2,6 +2,7 @@ package io.github.nevermore131315.llamaswapcontroller.ui.llamaswap
 
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.InMemoryLlamaSwapSettings
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapGpuStat
+import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapHttpException
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapPerformance
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapPerformanceApi
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapSysStat
@@ -13,6 +14,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.SerializationException
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -169,6 +171,62 @@ class LlamaSwapPerformanceViewModelTest {
             assertEquals(listOf<String?>(null, null), api.calls)
             assertFalse(vm.uiState.value.isRefreshing)
             assertEquals(1, vm.uiState.value.history.sys.size)
+            vm.stop()
+        }
+
+    @Test
+    fun `404 on performance reports missing endpoint, not a raw http error`() =
+        runTest(dispatcher) {
+            api.error = LlamaSwapHttpException(404, "HTTP 404: 404 page not found")
+            val vm = newVm()
+            vm.start()
+            runCurrent()
+            assertEquals(PerformanceApiGap.MissingEndpoint, vm.uiState.value.unsupported)
+            assertTrue(vm.uiState.value.hasSnapshot)
+            assertNull(vm.uiState.value.loadError)
+            vm.stop()
+        }
+
+    @Test
+    fun `unparseable performance payload reports unsupported and recovers on the next good poll`() =
+        runTest(dispatcher) {
+            api.error = SerializationException("Expected '{' but had '['")
+            val vm = newVm()
+            vm.start()
+            runCurrent()
+            assertEquals(PerformanceApiGap.UnparseablePayload, vm.uiState.value.unsupported)
+
+            api.error = null
+            api.addTick(0)
+            advanceTimeBy(15_001)
+            assertNull(vm.uiState.value.unsupported)
+            assertEquals(true, vm.uiState.value.enabled)
+            assertFalse(vm.uiState.value.history.isEmpty)
+            vm.stop()
+        }
+
+    @Test
+    fun `503 from the client layer maps to monitoring disabled without touching unsupported`() =
+        runTest(dispatcher) {
+            api.error = LlamaSwapHttpException(503, "HTTP 503")
+            val vm = newVm()
+            vm.start()
+            runCurrent()
+            assertEquals(false, vm.uiState.value.enabled)
+            assertNull(vm.uiState.value.unsupported)
+            vm.stop()
+        }
+
+    @Test
+    fun `plain network failures stay in loadError and never claim unsupported`() =
+        runTest(dispatcher) {
+            api.error = IOException("connection refused")
+            val vm = newVm()
+            vm.start()
+            runCurrent()
+            assertEquals("connection refused", vm.uiState.value.loadError)
+            assertNull(vm.uiState.value.unsupported)
+            assertFalse(vm.uiState.value.hasSnapshot)
             vm.stop()
         }
 }

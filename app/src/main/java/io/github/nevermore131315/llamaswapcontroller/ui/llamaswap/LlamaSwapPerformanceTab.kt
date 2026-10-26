@@ -65,6 +65,16 @@ internal fun LlamaSwapPerformanceTab(
 ) {
     val history = state.history
     when {
+        state.unsupported != null -> {
+            EmptyState(
+                title = stringResource(R.string.llamaswap_perf_unsupported_title),
+                subtitle = stringResource(R.string.llamaswap_perf_unsupported_desc, state.baseUrl),
+                icon = Icons.Filled.Speed,
+                actionLabel = stringResource(R.string.llamaswap_perf_refresh),
+                onAction = onRetry,
+            )
+        }
+
         !state.hasSnapshot && state.loadError != null -> {
             ErrorState(
                 message = stringResource(R.string.llamaswap_perf_error_load, state.baseUrl, state.loadError),
