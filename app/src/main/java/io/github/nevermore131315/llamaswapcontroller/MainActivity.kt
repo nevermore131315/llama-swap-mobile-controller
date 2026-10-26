@@ -6,12 +6,12 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.ThemeSettingsStore
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.ThemeSettingsStore
 import io.github.nevermore131315.llamaswapcontroller.theme.AppTheme
 import io.github.nevermore131315.llamaswapcontroller.ui.llamaswap.LlamaSwapScreen
 import io.github.nevermore131315.llamaswapcontroller.ui.llamaswap.LlamaSwapSettingsPage

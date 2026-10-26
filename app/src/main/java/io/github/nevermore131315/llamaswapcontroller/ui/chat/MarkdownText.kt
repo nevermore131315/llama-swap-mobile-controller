@@ -428,7 +428,14 @@ fun MarkdownText(
                     val uri = if (block is MdBlock.Image) block.uri else (block as MdBlock.Video).uri
                     val label = (block as? MdBlock.Image)?.alt?.takeIf { it.isNotBlank() }
                     Text(
-                        text = if (label != null) "[$label] ${MarkdownMediaResolver.resolveImageUrl(uri)}" else MarkdownMediaResolver.resolveImageUrl(uri),
+                        text =
+                            if (label !=
+                                null
+                            ) {
+                                "[$label] ${MarkdownMediaResolver.resolveImageUrl(uri)}"
+                            } else {
+                                MarkdownMediaResolver.resolveImageUrl(uri)
+                            },
                         color = textColor,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(vertical = 4.dp),

@@ -29,8 +29,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevermore131315.llamaswapcontroller.R
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapSettings
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapSettingsStore
-import io.github.nevermore131315.llamaswapcontroller.ui.common.EmptyState
 import io.github.nevermore131315.llamaswapcontroller.ui.common.AppScaffold
+import io.github.nevermore131315.llamaswapcontroller.ui.common.EmptyState
 import io.github.nevermore131315.llamaswapcontroller.ui.common.NavIcon
 import kotlinx.coroutines.flow.map
 

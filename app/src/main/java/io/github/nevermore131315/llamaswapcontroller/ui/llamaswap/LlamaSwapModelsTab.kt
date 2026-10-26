@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material.icons.filled.Sensors
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,7 +46,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.nevermore131315.llamaswapcontroller.R
-import androidx.compose.material3.AlertDialog
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapModel
 import io.github.nevermore131315.llamaswapcontroller.data.llamaswap.LlamaSwapState
 import io.github.nevermore131315.llamaswapcontroller.theme.LocalAppStatusColors
